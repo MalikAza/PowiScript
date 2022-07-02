@@ -1,18 +1,29 @@
+// imports
 const fs = require('node:fs');
 const path = require('node:path');
 const { Client, Intents, Collection } = require('discord.js');
 const { token } = require('./config.json');
 
+// intents
 const client = new Client({
     intents: [Intents.FLAGS.GUILDS]
 });
 
-client.once('ready', () => {
-    console.log(`Connected as ${client.user.username}#${client.user.discriminator}.`);
-});
+// events handler
+const eventsPath = path.join(__dirname, 'events');
+const eventsFiles = fs.readdirSync(eventsPath).filter(file => file.endsWith('.js'))
 
-client.login(token);
+for (const file of eventsFiles) {
+    const filePath = path.join(eventsPath, file);
+    const event = require(filePath);
+    if (event.once) {
+        client.once(event.name, (...args) => event.execute(...args));
+    } else {
+        client.on(event.name, (...args) => event.execute(...args));
+    }
+}
 
+// commands creation handler
 client.commands = new Collection();
 const commandsPath = path.join(__dirname, 'commands');
 const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
@@ -24,6 +35,7 @@ for (const file of commandFiles) {
     client.commands.set(command.data.name, command);
 }
 
+// commands interaction handler
 client.on('interactionCreate', async interaction => {
 	if (!interaction.isCommand()) return;
 
@@ -38,3 +50,6 @@ client.on('interactionCreate', async interaction => {
 		await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
 	}
 });
+
+// connecting to Discord
+client.login(token);
