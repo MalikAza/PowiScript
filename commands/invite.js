@@ -2,8 +2,8 @@ const { SlashCommandBuilder } = require('@discordjs/builders');
 
 module.exports = {
 	data: new SlashCommandBuilder()
-		.setName('ban')
-		.setDescription("Ban a user.")
+		.setName('invite')
+		.setDescription("Show the server link.")
         .addUserOption(option =>
             option.setName('user')
                 .setDescription("The user you want to tag to show server link.")
