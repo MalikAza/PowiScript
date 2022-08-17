@@ -19,6 +19,8 @@ const eventsFiles = fs.readdirSync(eventsPath).filter(file => file.endsWith('.js
 client.commands = new Collection();
 const commandsPath = path.join(__dirname, 'commands');
 const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
+// buttons
+client.buttons = new Collection();
 
 (async () => {
     for (file of functions) {
@@ -26,6 +28,7 @@ const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('
     };
     client.handleEvents(eventsFiles, eventsPath);
     client.handleCommands(commandFiles, commandsPath);
+    client.handleButtons();
     // connection to Discord
     client.login(token)
 })();
